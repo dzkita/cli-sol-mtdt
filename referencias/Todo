@@ -1,0 +1,32 @@
+## Cosas por hacer :
+- [x] attributos.rs
+    - Armar los atributos individuales
+    - Renderear los areibutos indeividuales
+    - Armar y renderear los atributos de varios.
+- [x] collections.rs
+    - Renderea solo un grupo donde tiene `name` y `family`
+- [x] core.rs
+    - Este es el mas complicado, renderea de todo :
+        1. name
+        2. symbol
+        3. description
+        4. seller_fee
+        5. image (dsp hay que poder armarlo on-chain)
+        6. animation_url :posibilidad de on-chain
+        7. external url : string noma
+    - [x] Render comun
+    - [x] render json
+- [ ] image.rs
+    - Este es un componente que permite armar las imagenes on-chain montando elementos desde svgs hasta htmls complejos (ojo aca pinta pai)
+    - Es opcional, se tiene que poder optar por esto o no
+
+- [ ] properties.rs
+    - Este es el archivo mas complejo porque hay 3 componentes :
+    1. files : un array que guarda assets, donde se especifica un uri y que tipo tienen
+    2. la categoria a la cual se asocian los tipos
+    3. Un array con la informacion de royalties para ver a quien le toca cada cosa
+
+- [ ] wrapper.rs
+    - Aca se encuentra la metadata por completo y ya la prepara para sere rendereada on chain. Asi que seguramente necesite tener alguna dependencia estilo base64 para que quede hecho web-visible
+
+- [ ] Averiguar como pasar todo esto a una logica de macros & atributos. Revisar el macro Accounts de Anchor y ver como pingo funciona
