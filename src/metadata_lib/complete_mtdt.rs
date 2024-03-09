@@ -56,6 +56,7 @@ use super::{
 pub struct FullMetadata {
     properties: Properties,
     attributes: Attributes,
+    
     core:CoreMetadata,
     collection:Collection
 }

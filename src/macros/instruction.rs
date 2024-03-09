@@ -1,6 +1,11 @@
-use syn::{Item, ItemStruct, Attribute,Meta, meta::{ParseNestedMeta,parser}, parse_quote};
+use super::gen_logic::{gen_attrs_logic, gen_core_logic, gen_properties_logic};
 use proc_macro2::TokenStream;
 use quote::quote;
+use syn::{
+    meta::{parser, ParseNestedMeta},
+    parse_quote, Attribute, Item, ItemStruct, LitStr, Meta,
+};
+
 pub fn generate_metadata(attrs: &[Attribute]) -> TokenStream {
     // Parseamos los argumentos de las instrucciones.
     let (generate_core, generate_attributes) = parse_metadata_instructions(attrs);
@@ -30,126 +35,85 @@ fn parse_metadata_instructions(attrs: &[Attribute]) -> (TokenStream, TokenStream
     // Variables para controlar qué partes de la metadata se deben generar.
     let mut generate_core = quote! {};
     let mut generate_attributes = quote! {};
+    let mut generate_properties = quote! {};
 
     // Iteramos sobre los atributos para identificar las instrucciones.
     for attr in attrs {
         //  #[mtdt(kind = "EarlGrey")]
-        if attr.path().is_ident("mtdt") {         // this parses the `tea`
-            attr.parse_nested_meta(|meta| {      // this parses the `(`
-                if meta.path.is_ident("full") {  // this parses the `full`
+        if attr.path().is_ident("mtdt") {
+            // this parses the `tea`
+            attr.parse_nested_meta(|meta| {
+                // this parses the `(`
+                if meta.path.is_ident("full") {
+                    // this parses the `full`
                     // // #[mtdt(full)]
                     // generate_core = quote! {
                     //     // Código específico para #[mtdt(full)].
                     //     // Puedes agregar aquí la lógica para la sección core.
                     // };
                     // #[mtdt(full)]
-                    generate_core = quote! {
-                        // Código específico para #[mtdt(full)].
-                        // Puedes agregar aquí la lógica para la sección core.
-                    };
-                    generate_attributes = quote! {
-                        // Código específico para #[mtdt(full)].
-                        // Puedes agregar aquí la lógica para la sección attributes.
-                    };
-                    
-                    Ok(())
-                }else if meta.path.is_ident(""){
-                    Ok(())
-                }else if meta.path.is_ident("") {
-                    Ok(())
-                
-                    // generate_attributes = quote! {
-                    //     // Código específico para #[mtdt(full)].
-                    //     // Puedes agregar aquí la lógica para la sección attributes.
-                    // };
+                    generate_core = gen_core_logic();
+                    // Código específico para #[mtdt(full)].
+                    // Puedes agregar aquí la lógica para la sección attributes.
+                    generate_attributes = gen_attrs_logic();
 
-                    // Some("core") => {
-                    //     generate_core = quote! {
-                    //         // Código específico para #[mtdt(core)].
-                    //         // Puedes agregar aquí la lógica para la sección core.
-                    //     };
-                    // }
-                    // Some("atrs") => {
-                    //     generate_attributes = quote! {
-                    //         // Código específico para #[mtdt(atrs)].
-                    //         // Puedes agregar aquí la lógica para la sección attributes.
-                    //     };
-                    // }
+                    // Código específico para #[mtdt(full)].
+                    // Puedes agregar aquí la lógica para la sección attributes.
+                    generate_properties = gen_properties_logic();
+                    Ok(())
+                } else if meta.path.is_ident("core") {
+                    // Este genera los casos :
+                    // #[mtdt(core)]
+                    // #[mtdt(core,atrs)]
+                    // #[mtdt(core,properties)]
+                    let value = meta.value()?; // this parses the `=`
+                    let s: LitStr = value.parse()?;
+                    if s.value() == "atrs" {
+                        generate_attributes = gen_attrs_logic();
+                    } else if s.value() == "properites" {
+                        generate_properties = gen_properties_logic();
+                    }
+                    generate_core = gen_core_logic();
+
+                    Ok(())
+                } else if meta.path.is_ident("atrs") {
+                    // Este genera los casos :
+                    // #[mtdt(atrs)]
+                    // #[mtdt(atrs,core)]
+                    // #[mtdt(atrs,properties)]
+                    let value = meta.value()?; // this parses the `=`
+                    let s: LitStr = value.parse()?;
+                    if s.value() == "core" {
+                        generate_core = gen_core_logic();
+                    } else if s.value() == "properites" {
+                        generate_properties = gen_properties_logic();
+                    }
+                    generate_attributes = gen_attrs_logic();
+
+                    Ok(())
+                } else if meta.path.is_ident("properites") {
+                    // Este genera los casos :
+                    // #[mtdt(properites)]
+                    // #[mtdt(properites,core)]
+                    // #[mtdt(properites,atrs)]
+                    let value = meta.value()?; // this parses the `=`
+                    let s: LitStr = value.parse()?;
+                    if s.value() == "core" {
+                        generate_core = gen_core_logic();
+                    } else if s.value() == "atrs" {
+                        generate_attributes = gen_attrs_logic();
+                    }
+                    generate_properties = gen_properties_logic();
+
+                    Ok(())
                 } else {
-                    // #[mtdt]
-                    generate_core = quote! {
-                        // Código específico para #[mtdt].
-                        // Puedes agregar aquí la lógica para la sección core.
-                    };
+                    // #[mtdt] : CoreMetadata, Collection
+                    generate_core = gen_core_logic();
                     Ok(())
                 }
-            })?;
-        }
-            if let Some(syn::Meta::List(meta)) = meta_list.nested.first() {
-                match meta {
-                    Meta::Path(path) => {
-                        match path.get_ident().map(|ident| ident.to_string().as_str()) {
-                            Some("mtdt") => {
-                                // #[mtdt]
-                                generate_core = quote! {
-                                    // Código específico para #[mtdt].
-                                    // Puedes agregar aquí la lógica para la sección core.
-                                };
-                            }
-                            Some("mtdt") if meta_list.nested.len() == 1 => {
-                                // #[mtdt(full)]
-                                generate_core = quote! {
-                                    // Código específico para #[mtdt(full)].
-                                    // Puedes agregar aquí la lógica para la sección core.
-                                };
-                                generate_attributes = quote! {
-                                    // Código específico para #[mtdt(full)].
-                                    // Puedes agregar aquí la lógica para la sección attributes.
-                                };
-                            }
-                            Some("mtdt") if meta_list.nested.len() == 2 => {
-                                // #[mtdt(core,atrs)]
-                                for nested_meta in &meta_list.nested {
-                                    if let syn::NestedMeta::Meta(nested_meta) = nested_meta {
-                                        match nested_meta {
-                                            Meta::Path(nested_path) => {
-                                                match nested_path.get_ident().map(|ident| ident.to_string().as_str()) {
-                                                    Some("core") => {
-                                                        generate_core = quote! {
-                                                            // Código específico para #[mtdt(core)].
-                                                            // Puedes agregar aquí la lógica para la sección core.
-                                                        };
-                                                    }
-                                                    Some("atrs") => {
-                                                        generate_attributes = quote! {
-                                                            // Código específico para #[mtdt(atrs)].
-                                                            // Puedes agregar aquí la lógica para la sección attributes.
-                                                        };
-                                                    }
-                                                    _ => {
-                                                        // Manejar otros casos si es necesario.
-                                                    }
-                                                }
-                                            }
-                                            _ => {
-                                                // Manejar otros casos si es necesario.
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            _ => {
-                                // Manejar otros casos si es necesario.
-                            }
-                        }
-                    }
-                    _ => {
-                        // Manejar otros casos si es necesario.
-                    }
-                }
-            }
+            })
+            .unwrap();
         }
     }
-
     (generate_core, generate_attributes)
 }
