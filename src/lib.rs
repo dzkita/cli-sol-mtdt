@@ -2,7 +2,15 @@ extern crate proc_macro;
 mod macros;
 use macros::instruction::generate_metadata;
 use proc_macro::TokenStream;
+
 use syn::ItemStruct;
+// #[proc_macro_derive(Mtdt, attributes(account, instruction))]
+// pub fn derive_anchor_deserialize(item: TokenStream) -> TokenStream {
+//     parse_macro_input!(item as anchor_lib::anchor_syn::AccountsStruct)
+//         .to_token_stream()
+//         .into()
+// }
+
 
 /// Ahora quiero agregarle una forma de interprear la seccion instruction:
 ///#[mtdt] : esta se guardaria solo para los tokens comunes (solo la parte CoreMetadata)
