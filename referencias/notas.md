@@ -93,7 +93,7 @@ For the fields that match the on-chain metadata, on-chain information has priori
 properties.category - Supported categories: image (png, gif, svg, jpg), video (mp4, mov), audio (mp3, flac, wav), vr (glb, gltf)
 
 `properties.files` - Object array, where an object should contain the uri and type of the file that is part of the asset. The type should match the file extension. The array will also include files specified in image and animation_url fields, and any other that are associated with the asset. You may use the ?ext={file_extension} query to provide information on the file type.
-attributes - Object array, where an object should contain trait_type and value fields. value can be a string or a number.
+`attributes` - Object array, where an object should contain trait_type and value fields. value can be a string or a number.
 
 Additional suggestions
 ---

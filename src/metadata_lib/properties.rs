@@ -1,11 +1,11 @@
-#[derive(Default)]
+#[derive(Default, Clone)]
 /// `type` is a reserved wors so we use `tipo` as is the translation in spanish
 pub struct File {
     uri: String,
     tipo: String,
     cdn: bool,
 }
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Creator {
     address: String,
     share: usize,
@@ -14,6 +14,7 @@ pub struct Creator {
 pub type Creators = Vec<Creator>;
 pub type Files = Vec<File>;
 
+#[derive(Clone)]
 pub struct Properties {
     files: Files,
     category: String,
@@ -98,11 +99,39 @@ impl Properties {
         }
         fmted_creators
     }
-    pub fn new() -> Self {
+
+    pub fn new(am_files: usize, am_creators: usize) -> Self {
+        let mut empty_files = Files::new();
+        let mut empty_creators = Creators::new();
+        match am_files {
+            0 => {}
+            1 => {
+                empty_files.push(File::default());
+            }
+            _ => {
+                let def = File::default();
+                for _x in 0..am_files {
+                    empty_files.push(def.clone());
+                }
+            }
+        }
+        match am_creators {
+            0 => {}
+            1 => {
+                empty_creators.push(Creator::default());
+            }
+            _ => {
+                let def = Creator::default();
+                for _x in 0..am_creators {
+                    empty_creators.push(def.clone());
+                }
+            }
+        }
+
         Self {
-            files: Files::new(),
+            files: empty_files,
             category: String::new(),
-            creators: Creators::new(),
+            creators: empty_creators,
         }
     }
 }
@@ -112,7 +141,7 @@ impl std::fmt::Display for Properties {
         let fmted_files = Self::fmt_properties(&self);
 
         let fmted_creators = Self::fmt_creators(&self);
-        let mut fmt_properties:String=String::new();
+        let mut fmt_properties: String = String::new();
         if self.category.is_empty() {
             if fmted_files != "" && fmted_creators != "" {
                 fmt_properties = format!(
@@ -156,9 +185,15 @@ mod tets {
     use super::*;
     #[test]
     fn test_properties_metadata() {
-        let properties_metadata = Properties::new();
+        let mut properties_metadata = Properties::new(1, 0);
+        let mtdt2 = Properties::new(1, 1);
         println!("{}", properties_metadata);
-
+        
+        properties_metadata.category = "film".to_string();
+        
+        println!("{}", properties_metadata);
+        println!("{}", mtdt2);
+        
         // json!(core_metadata);
     }
 }
