@@ -1,11 +1,11 @@
 extern crate proc_macro;
+mod macros;
 mod metadata_lib;
 
-
+use macros::instruction::generate_metadata;
 use proc_macro::TokenStream;
-use quote::{self,ToTokens};
-use syn::{parse_macro_input, Attribute,DeriveInput};
-
+use quote::{self, ToTokens};
+use syn::{parse_macro_input, DeriveInput,Item};
 
 // #[proc_macro_derive(Mtdt, attributes(account, instruction))]
 // pub fn derive_anchor_deserialize(item: TokenStream) -> TokenStream {
@@ -14,10 +14,9 @@ use syn::{parse_macro_input, Attribute,DeriveInput};
 //         .into()
 // }
 
-
 /// Ahora quiero agregarle una forma de interprear la seccion instruction:
 ///#[mtdt] : esta se guardaria solo para los tokens comunes (solo la parte CoreMetadata)
-/// #[mtdt(full)] : pide implementar todos los parametros y arma la cuenta como default al maximo espacio 
+/// #[mtdt(full)] : pide implementar todos los parametros y arma la cuenta como default al maximo espacio
 /// ----------------------------------------
 ///  Tambien permite seleccionar a los usarios las propiedades que necesiten, por ejemplo :
 /// #[mtdt(core,atrs)] : pide implementar SOLO cuentas para `CoreMetadata` && para `Attributes`
@@ -45,38 +44,13 @@ pub fn derive_onchain_mtdt(input: TokenStream) -> TokenStream {
 }
 
 
-
 #[proc_macro]
 pub fn instruction(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input = syn::parse_macro_input!(input as Item);
-    let expanded = generate_code(input);
+    let expanded = generate_metadata(input);
     expanded.into()
 }
 
-// use syn::{Item, ItemEnum, ItemStruct};
-
-fn generate_code(item: Item) -> proc_macro2::TokenStream {
-    match item {
-        Item::Struct(s) => generate_struct_code(&s),
-        Item::Enum(e) => generate_enum_code(&e),
-        _ => {
-            // Manejar otros casos o generar un error si es necesario.
-            quote! {
-                compile_error!("Unsupported item type. Only structs and enums are supported.");
-            }
-        }
-    }
-}
-
-fn generate_struct_code(s: &ItemStruct) -> proc_macro2::TokenStream {
-    // Implementa la lógica para generar código para structs.
-    // ...
-}
-
-fn generate_enum_code(e: &ItemEnum) -> proc_macro2::TokenStream {
-    // Implementa la lógica para generar código para enums.
-    // ...
-}
 // /// Ahora quiero generar los siguientes escenarios
 // #[proc_macro]
 // pub fn instruction(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
@@ -94,10 +68,6 @@ fn generate_enum_code(e: &ItemEnum) -> proc_macro2::TokenStream {
 //     };
 //     expanded.into()
 // }
-
-
-
-
 
 // #[proc_macro]
 // pub fn account(input: proc_macro::TokenStream) -> proc_macro::TokenStream {

@@ -59,3 +59,54 @@ pub struct FullMetadata {
     core:CoreMetadata,
     collection:Collection
 }
+// #[derive(Default)]
+// pub struct CoreMetadata {
+//     name: String,
+//     symbol: String,
+//     description: String,
+//     seller_fee_basis_points: usize,
+//     image: String,
+//     animation_url: String,
+//     external_url: String,
+// }
+// #[derive(Default, Clone)]
+// pub struct Attribute {
+//     trait_type: String,
+//     value: String,
+//     display_type: String,
+//     trait_count: u64,
+//     max_value: u64,
+// }
+
+// pub struct Attributes {
+//     atrs: Vec<Attribute>,
+// }
+
+// #[derive(Default)]
+// pub struct Collection {
+//     name: String,
+//     family: String,
+// }
+
+// #[derive(Default, Clone)]
+// /// `type` is a reserved wors so we use `tipo` as is the translation in spanish
+// pub struct File {
+//     uri: String,
+//     tipo: String,
+//     cdn: bool,
+// }
+// #[derive(Default, Clone)]
+// pub struct Creator {
+//     address: String,
+//     share: usize,
+// }
+
+// pub type Creators = Vec<Creator>;
+// pub type Files = Vec<File>;
+
+// #[derive(Clone)]
+// pub struct Properties {
+//     files: Files,
+//     category: String,
+//     creators: Creators,
+// }
