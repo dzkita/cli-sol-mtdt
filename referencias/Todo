@@ -16,9 +16,7 @@
         7. external url : string noma
     - [x] Render comun
     - [x] render json
-- [ ] image.rs
-    - Este es un componente que permite armar las imagenes on-chain montando elementos desde svgs hasta htmls complejos (ojo aca pinta pai)
-    - Es opcional, se tiene que poder optar por esto o no
+
 
 - [ ] properties.rs
     - Este es el archivo mas complejo porque hay 3 componentes :
@@ -30,3 +28,13 @@
     - Aca se encuentra la metadata por completo y ya la prepara para sere rendereada on chain. Asi que seguramente necesite tener alguna dependencia estilo base64 para que quede hecho web-visible
 
 - [ ] Averiguar como pasar todo esto a una logica de macros & atributos. Revisar el macro Accounts de Anchor y ver como pingo funciona
+
+### Versiones proximas :
+1. Onchain img 
+2. Onchain html
+```
+    - [ ] image.rs
+    - Este es un componente que permite armar las imagenes on-chain montando elementos desde svgs hasta htmls complejos (ojo aca pinta pai)
+    - Es opcional, se tiene que poder optar por esto o no
+```
+3. condicionales para los atributos 

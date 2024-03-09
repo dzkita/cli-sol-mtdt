@@ -1,28 +1,36 @@
 use super::gen_logic::{gen_attrs_logic, gen_core_logic, gen_properties_logic};
-use proc_macro2::TokenStream;
+use proc_macro2::{Ident, TokenStream};
 use quote::quote;
-use syn::{
-    meta::{parser, ParseNestedMeta},
-    parse_quote, Attribute, Item, ItemStruct, LitStr, Meta,
-};
+use syn::{Attribute, LitStr};
 
-pub fn generate_metadata(attrs: &[Attribute]) -> TokenStream {
+// pub fn generate_metadata(attrs: &[Attribute]) -> TokenStream {
+pub fn generate_metadata(attrs: &[Attribute], struct_name: &Ident) -> TokenStream {
     // Parseamos los argumentos de las instrucciones.
-    let (generate_core, generate_attributes) = parse_metadata_instructions(attrs);
+
+    let (generate_core, generate_attributes, generate_properties) =
+        parse_metadata_instructions(attrs);
 
     // Generamos la metadata según las instrucciones.
     let generated_code = quote! {
         // Código común que deseas generar para todos los structs.
 
         // Verificación de la instrucción #[mtdt(full)] con argumentos.
-        mod metadata {
-            // Código específico para #[mtdt].
-            pub fn generate() {
-                // Implementación específica para #[mtdt].
-                // Puedes utilizar los argumentos aquí, por ejemplo: #(#metadata_args)*
-                #generate_core
-                #generate_attributes
-            }
+
+       // Verificación de la instrucción #[mtdt(full)] con argumentos.
+        // mod metadata {
+        //     // Código específico para #[mtdt].
+        //     pub fn generate() {
+        //         // Implementación específica para #[mtdt].
+        //         // Puedes utilizar los argumentos aquí, por ejemplo: #(#metadata_args)*
+        //         #generate_core
+        //         #generate_attributes
+        //         #generate_properties
+        //     }
+        // }
+        struct #struct_name{
+            #generate_core
+            #generate_attributes
+            #generate_properties
         }
 
         // Resto del código que deseas generar para todos los structs.
@@ -31,7 +39,7 @@ pub fn generate_metadata(attrs: &[Attribute]) -> TokenStream {
     generated_code
 }
 
-fn parse_metadata_instructions(attrs: &[Attribute]) -> (TokenStream, TokenStream) {
+fn parse_metadata_instructions(attrs: &[Attribute]) -> (TokenStream, TokenStream, TokenStream) {
     // Variables para controlar qué partes de la metadata se deben generar.
     let mut generate_core = quote! {};
     let mut generate_attributes = quote! {};
@@ -39,7 +47,23 @@ fn parse_metadata_instructions(attrs: &[Attribute]) -> (TokenStream, TokenStream
 
     // Iteramos sobre los atributos para identificar las instrucciones.
     for attr in attrs {
-        //  #[mtdt(kind = "EarlGrey")]
+        // Casos :
+        //#[mtdt]
+        //#[mtdt(full)]
+        //#[mtdt(core)]
+        //  - #[mtdt(core,atrs)]
+        //  - #[mtdt(core,properities)]
+        //#[mtdt(atrs)]
+        //  - #[mtdt(atrs,core)]
+        //  - #[mtdt(atrs,properities)]
+        //#[mtdt(properties)]
+        //  - #[mtdt(properties,core)]
+        //  - #[mtdt(properties,atrs)]
+        // -----------------------------
+        // NEXT :
+        //  - #[mtdt(svg)]
+        //  - #[mtdt(html)]
+        //
         if attr.path().is_ident("mtdt") {
             // this parses the `tea`
             attr.parse_nested_meta(|meta| {
@@ -115,5 +139,5 @@ fn parse_metadata_instructions(attrs: &[Attribute]) -> (TokenStream, TokenStream
             .unwrap();
         }
     }
-    (generate_core, generate_attributes)
+    (generate_core, generate_attributes, generate_properties)
 }
