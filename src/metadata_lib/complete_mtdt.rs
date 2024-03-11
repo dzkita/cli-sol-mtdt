@@ -60,6 +60,16 @@ pub struct FullMetadata {
     core:CoreMetadata,
     collection:Collection
 }
+pub struct FullMetadata {
+    #[account]
+    #[mtdt(properties)]
+    properties: Properties,
+    attributes: Attributes,
+    
+    core:CoreMetadata,
+    collection:Collection
+}
+
 // #[derive(Default)]
 // pub struct CoreMetadata {
 //     name: String,

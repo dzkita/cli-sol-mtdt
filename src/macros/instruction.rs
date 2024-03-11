@@ -27,11 +27,11 @@ pub fn generate_metadata(attrs: &[Attribute], struct_name: &Ident) -> TokenStrea
         //         #generate_properties
         //     }
         // }
-        struct #struct_name{
+        // struct #struct_name{
             #generate_core
             #generate_attributes
             #generate_properties
-        }
+        // }
 
         // Resto del código que deseas generar para todos los structs.
     };

@@ -1,5 +1,5 @@
 [package]
-name = "metadata-builder-sol"
+name = "onchain_mtdt_sol"
 version = "0.1.0"
 edition = "2021"
 
@@ -11,3 +11,7 @@ proc-macro2 = "1.0.78"
 quote = "1.0.35"
 serde_json = "1.0.114"
 syn = {version = "2.0.52",features = ['full']}
+
+[[test]]
+name = "mtdt_test"
+path = "tests/mtdt_test.rs"
